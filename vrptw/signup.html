@@ -1,0 +1,91 @@
+<!doctype html>
+
+<html lang="en"> 
+
+ <head> 
+
+  <meta charset="UTF-8"> 
+
+  <title>CodePen - Animated Login Form using Html &amp; CSS Only</title> 
+
+  <link rel="stylesheet" href="css/signup.css"> 
+
+ </head> 
+
+ <body> <!-- partial:index.partial.html --> 
+
+  <section> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> 
+
+   <div class="signin"> 
+
+    <div class="content"> 
+
+     <h2>Sign In</h2> 
+
+     <form class="form" id="signupForm">
+      <div class="inputBox">
+        <input type="text" id="cname" class="compname" required> <i>Company Name</i>
+      </div>
+      <div class="inputBox">
+        <input type="text" id="name" class="name" required> <i>Name</i>
+      </div>
+      <div class="inputBox">
+        <input type="email" id="email" class="email" required> <i>Email</i>
+      </div>
+      <div class="inputBox">
+        <input type="text" id="mobno" class="mobno" required> <i>Phone No</i>
+      </div>
+      <div class="inputBox">
+        <input type="text" id="uname" class="uname" required> <i>Username</i>
+      </div>
+      <div class="inputBox">
+        <input type="password" id="pass" class="pass" required> <i>Password</i>
+      </div>
+      <div class="inputBox">
+        <input type="submit" value="Sign Up">
+      </div>
+    </form>
+    <p id="message"></p>
+  </div>
+</div>
+</section>
+<script>
+  document.getElementById('signupForm').addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const cname = document.getElementById('cname').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const mobno = document.getElementById('mobno').value;
+    const username = document.getElementById('uname').value;
+    const password = document.getElementById('pass').value;
+  
+    try {
+      const response = await fetch('http://localhost:3050/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cname, name, email, mobno, username, password }),
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        document.getElementById('message').innerText = 'User registered successfully!';
+        document.getElementById('message').style.color = 'green';
+        // Optionally, redirect to login.html or handle the redirect client-side
+         window.location.href = 'login.html';
+      } else {
+        document.getElementById('message').innerText = data.error || 'Error registering user';
+        document.getElementById('message').style.color = 'red';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      document.getElementById('message').innerText = 'Error registering user';
+      document.getElementById('message').style.color = 'red';
+    }
+  });
+  </script>
+
+ </body>
+
+</html>

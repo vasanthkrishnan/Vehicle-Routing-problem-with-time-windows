@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>VRPTW</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<style>
+    body {
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f7f6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #333;
+    }
+    h1 {
+        text-align: center;
+        width: 100%;
+        color: #2c3e50;
+        margin: 20px 0;
+        font-size: 2.5em;
+        font-weight: 300;
+    }
+    #content {
+        display: flex;
+        width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    #map {
+        height: 80vh;
+        width: 70%;
+        border-right: 1px solid #ddd;
+        border-radius: 10px 0 0 10px;
+    }
+    #vehicle-info {
+        width: 30%;
+        padding: 20px;
+        background-color: #f9f9f9;
+        display: flex;
+        flex-direction: column;
+    }
+    .vehicle-details {
+        padding: 15px;
+        border: 1px solid #e1e4e8;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+        margin-top: 20px;
+    }
+    .vehicle-details:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .vehicle-details h3 {
+        margin-top: 0;
+        color: #3498db;
+        font-size: 1.2em;
+    }
+    .vehicle-details p {
+        margin: 5px 0;
+        color: #555;
+    }
+    .vehicle-details:nth-child(odd) {
+        background-color: #f1f8ff;
+    }
+    .color-square {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-left: 10px;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+        border-radius: 3px;
+    }
+    .rem-capacity {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+    }
+    .capacity-bar {
+        flex: 1;
+        height: 10px;
+        border-radius: 5px;
+        background-color: #d3d3d3;
+        margin-right: 10px;
+        position: relative;
+    }
+    .capacity-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        background-color: #3498db;
+        width: 0;
+        transition: width 0.3s;
+    }
+    .capacity-value {
+        color: #3498db;
+        font-weight: bold;
+    }
+    #solve-button {
+        margin-bottom: 20px;
+        padding: 15px 30px;
+        font-size: 1.2em;
+        color: white;
+        background-color: #3498db;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s;
+        align-self: center;
+    }
+    #solve-button:hover {
+        background-color: #2980b9;
+        transform: translateY(-3px);
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000; /* Adjust to ensure modal appears above other content */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .modal-header h2 {
+        text-align: center;
+        color: #3498db;
+        margin-top: 0;
+    }
+    .modal-body input {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    .modal-body button {
+        background-color: #3498db;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    .modal-body button:hover {
+        background-color: #2980b9;
+    }
+    .modal-body .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .add-more-btn {
+        background-color: #2ecc71;
+    }
+    .add-more-btn:hover {
+        background-color: #27ae60;
+    }
+</style>
+<body>
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 wow fadeIn" data-wow-delay="0.1s">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h1 class="m-0 text-primary"><i class="fas fa-truck me-3"></i>VRPTW</h1>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="algorithm.html" class="nav-item nav-link">Algorithms</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Services</a>
+                    <div class="dropdown-menu rounded-0 rounded-bottom m-0">
+                        <a href="history.html" class="dropdown-item">History</a>
+                        <a href="" class="dropdown-item">Clarke-Wright Algo</a>
+                        <a href="appointment.html" class="dropdown-item active">Genetic Algo</a>
+                    </div>
+                </div>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+            </div>
+            <a href="" class="btn btn-dark rounded-0 py-4 px-lg-5 d-none d-lg-block">Get Service<i class="fa fa-arrow-right ms-3"></i></a>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+    <div id="content">
+        <div id="map"></div>
+        <div id="vehicle-info">
+            <button id="solve-button">Solve</button>
+        </div>
+    </div>
+
+    <!-- Modal for input -->
+    <div id="inputModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enter Route Details</h2>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input type="number" id="numCustomers" placeholder="Number of Customers">
+                    <button id="startInputBtn">Start Input</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for customer details -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Enter Customer Details</h2>
+            </div>
+            <div class="modal-body">
+                <div id="customerInputs"></div>
+                <button id="submitBtn">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        const customers = [];
+        const vehicles = [
+            { id: 0, capacity: 10 },
+            { id: 1, capacity: 10 },
+            { id: 2, capacity: 10 }
+        ];
+        const colors = ['blue', 'red', 'green'];
+
+        // Show the initial input modal
+        const inputModal = document.getElementById('inputModal');
+        inputModal.style.display = 'block';
+
+        document.getElementById('startInputBtn').addEventListener('click', () => {
+            const numCustomers = document.getElementById('numCustomers').value;
+            if (numCustomers > 0) {
+                inputModal.style.display = 'none';
+                showCustomerModal(numCustomers);
+            }
+        });
+
+        function showCustomerModal(numCustomers) {
+            const customerModal = document.getElementById('customerModal');
+            const customerInputsDiv = document.getElementById('customerInputs');
+            customerInputsDiv.innerHTML = '';
+
+            for (let i = 0; i < numCustomers; i++) {
+                const inputGroup = document.createElement('div');
+                inputGroup.className = 'input-group';
+                inputGroup.innerHTML = `
+                    <input type="number" placeholder="Customer ID" class="customer-id">
+                    <input type="number" placeholder="Demand" class="demand">
+                    <input type="number" placeholder="Latitude" class="latitude">
+                    <input type="number" placeholder="Longitude" class="longitude">
+                    <input type="number" placeholder="Start Time" class="start-time">
+                    <input type="number" placeholder="End Time" class="end-time">
+                `;
+                customerInputsDiv.appendChild(inputGroup);
+            }
+
+            customerModal.style.display = 'block';
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            const customerInputs = document.querySelectorAll('#customerInputs .input-group');
+            customers.length = 0;
+
+            customerInputs.forEach(inputGroup => {
+                const customerId = inputGroup.querySelector('.customer-id').value;
+                const demand = inputGroup.querySelector('.demand').value;
+                const latitude = inputGroup.querySelector('.latitude').value;
+                const longitude = inputGroup.querySelector('.longitude').value;
+                const startTime = inputGroup.querySelector('.start-time').value;
+                const endTime = inputGroup.querySelector('.end-time').value;
+
+                customers.push({
+                    id: parseInt(customerId),
+                    demand: parseInt(demand),
+                    lat: parseFloat(latitude),
+                    lng: parseFloat(longitude),
+                    startTime: parseInt(startTime),
+                    endTime: parseInt(endTime)
+                });
+            });
+
+            // Close modal after submission
+            document.getElementById('customerModal').style.display = 'none';
+
+            // Initialize map and solve button
+            initMap();
+            document.getElementById('solve-button').style.display = 'block';
+        });
+
+        let map;
+        let routesLayer;
+
+        function initMap() {
+            map = L.map('map').setView([13.0827, 80.2707], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Example markers for demonstration
+            const depotMarker = L.marker([13.0827, 80.2707]).addTo(map);
+            depotMarker.bindPopup('<b>Depot</b><br>Chennai, India').openPopup();
+
+            // Example vehicle routes (replace with actual calculated routes)
+            const vehicleRoutes = calculateRoutes();
+
+            // Display routes on the map
+            displayRoutes(vehicleRoutes);
+        }
+
+        function calculateRoutes() {
+            // Implement saving algorithm or other routing logic here
+            // Example logic: simply connect all customers sequentially
+            const vehicleRoutes = [];
+
+            vehicles.forEach((vehicle, index) => {
+                const route = [];
+                route.push({ id: 'depot', latlng: [13.0827, 80.2707] }); // Depot as starting point
+
+                // Add customers for this vehicle
+                customers.forEach(customer => {
+                    route.push({ id: customer.id, latlng: [customer.lat, customer.lng] });
+                });
+
+                route.push({ id: 'depot', latlng: [13.0827, 80.2707] }); // Depot as ending point
+
+                vehicleRoutes.push({
+                    vehicleId: vehicle.id,
+                    color: colors[index % colors.length],
+                    route: route
+                });
+            });
+
+            return vehicleRoutes;
+        }
+
+        function displayRoutes(vehicleRoutes) {
+            routesLayer = L.layerGroup();
+
+            vehicleRoutes.forEach(vehicle => {
+                const coordinates = vehicle.route.map(point => point.latlng);
+                const polyline = L.polyline(coordinates, { color: vehicle.color }).addTo(map);
+                routesLayer.addLayer(polyline);
+
+                // Adding markers for each point (excluding depot for clarity)
+                vehicle.route.forEach(point => {
+                    if (point.id !== 'depot') {
+                        const marker = L.marker(point.latlng).addTo(map);
+                        marker.bindPopup(`<b>Customer ${point.id}</b><br>Lat: ${point.latlng[0]}, Lng: ${point.latlng[1]}`);
+                    }
+                });
+            });
+
+            map.addLayer(routesLayer);
+        }
+
+        document.getElementById('solve-button').addEventListener('click', () => {
+            const vehicleRoutes = calculateRoutes();
+            routesLayer.clearLayers(); // Clear previous routes
+            displayRoutes(vehicleRoutes); // Display newly calculated routes
+        });
+
+        function updateVehicleInfo() {
+    const vehicleInfoDiv = document.getElementById('vehicle-info');
+    vehicleInfoDiv.innerHTML = ''; // Clear existing info
+
+    vehicles.forEach((vehicle, index) => {
+        const vehicleDiv = document.createElement('div');
+        vehicleDiv.className = 'vehicle-details';
+        vehicleDiv.innerHTML = `
+            <h3>Vehicle ${vehicle.id}</h3>
+            <p><strong>Capacity:</strong> ${vehicle.capacity}</p>
+            <div class="rem-capacity">
+                <div class="capacity-bar">
+                    <div class="capacity-bar-fill" style="width: 100%;"></div>
+                </div>
+                <span class="capacity-value">${vehicle.capacity}</span>
+            </div>
+            <p><strong>Color:</strong> <span class="color-square" style="background-color: ${colors[index]}"></span></p>
+        `;
+        vehicleInfoDiv.appendChild(vehicleDiv);
+    });
+
+    // Add solve button
+    const solveButton = document.createElement('button');
+    solveButton.id = 'solve-button';
+    solveButton.textContent = 'Solve';
+    solveButton.addEventListener('click', () => {
+        alert('Solving VRPTW...');
+        // Your solving logic here
+    });
+    vehicleInfoDiv.appendChild(solveButton);
+}
+
+
+    </script>
+
+    <!-- Page Header Start -->
+    
+    <!-- Appointment End -->
+        
+
+    
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/geneticInput.js"></script>
+    <script src="js/script.js"></script>
+ 
+    <!-- Template Javascript -->
+</body>
+
+</html>
