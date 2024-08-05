@@ -22,14 +22,27 @@ This tool is particularly useful for logistics and transportation companies look
 
 ## Technologies Used
 
-- HTML
-- CSS
-- JavaScript
-- MongoDB
-- Node.js
-- Express
-- Chart.js
-- OpenRouteService API
+The VRPTW Visualization Project uses the following technologies:
+
+- **HTML5**
+- **CSS3**
+- **JavaScript (ES6+)**
+- **Node.js**: ^16.0.0
+- **Express.js**: ^4.17.1
+- **MongoDB**: ^4.4
+- **Mongoose**: ^6.0.12
+- **Chart.js**: ^3.7.1
+- **OpenRouteService API**
+- **Clarke-Wright Savings Algorithm** (implemented in JavaScript)
+- **Genetic Algorithm** (implemented in JavaScript)
+
+### Additional Dependencies
+
+- **CORS**: ^2.8.5
+- **Body-Parser**: ^1.19.0
+- **Dotenv**: ^10.0.0
+- **Axios**: ^0.24.0
+
 
   ## Setup
 
